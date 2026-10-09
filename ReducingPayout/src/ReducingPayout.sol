@@ -23,6 +23,10 @@ contract ReducingPayout {
 
     function withdraw() public {
         // your code here
+        uint256 timePassed = block.timestamp - depositedTime;
+        if (timePassed >= 86400) return;
+        uint256 amountExpected = (address(this).balance * (86400 - timePassed)) / 86400;
+        (bool success, ) = payable(msg.sender).call{value: amountExpected}("");
+        require(success, "Transfer failed");
     }
 }
-

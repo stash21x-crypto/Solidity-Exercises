@@ -19,5 +19,8 @@ contract ExampleEnum {
 
     function isWeekend(uint256 index) public pure returns (bool) {
         // your code here
+        require(index < 7, "Invalid day index");
+        DayOfWeek day = DayOfWeek(index);
+        return (day == DayOfWeek.Saturday || day == DayOfWeek.Sunday);
     }
 }

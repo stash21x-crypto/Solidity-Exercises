@@ -12,16 +12,28 @@ contract OneWeekLockup {
      * - withdrawEther(uint256 )
      * - balanceOf(address )
      */
+    mapping(address => uint256) private userBalances;
+    mapping(address => uint256) private lastDepositTime;
 
     function balanceOf(address user) public view returns (uint256) {
         // return the user's balance in the contract
+        return userBalances[user];
     }
 
     function depositEther() external payable {
         /// add code here
+        userBalances[msg.sender] += msg.value;
+        lastDepositTime[msg.sender] = block.timestamp;
     }
 
-    function withdrawEther(uint256 amount) external {
+    function withdrawEther(uint256 amount) external returns (bool) {
         /// add code here
+        require(userBalances[msg.sender] >= amount, "Insufficient balance");
+        // forge-lint: disable-next-line(block-timestamp)
+        require(lastDepositTime[msg.sender] + 7 days < block.timestamp, "Withdrawal not allowed yet");
+        userBalances[msg.sender] -= amount;
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "Transfer failed");
+        return true;
     }
 }

@@ -3,6 +3,8 @@ pragma solidity ^0.8.13;
 
 contract TimelockEscrow {
     address public seller;
+    mapping(address => uint256) private deposits;
+    mapping(address => uint256) private depositTimes;
 
     /**
      * The goal of this exercise is to create a Time lock escrow.
@@ -22,6 +24,11 @@ contract TimelockEscrow {
      */
     function createBuyOrder() external payable {
         // your code here
+        require(msg.value > 0, "Invalid deposit amount");
+        require(deposits[msg.sender] == 0, "Active escrow already exists");
+
+        deposits[msg.sender] = msg.value;
+        depositTimes[msg.sender] = block.timestamp;
     }
 
     /**
@@ -29,6 +36,17 @@ contract TimelockEscrow {
      */
     function sellerWithdraw(address buyer) external {
         // your code here
+        require(msg.sender == seller, "Only seller can withdraw");
+        uint256 amount = deposits[buyer];
+        require(amount > 0, "No active escrow");
+        // forge-lint: disable-next-line(block-timestamp)
+        require(block.timestamp >= depositTimes[buyer] + 3 days, "Escrow is still locked");
+
+        delete deposits[buyer];
+        delete depositTimes[buyer];
+
+        (bool success, ) = payable(seller).call{value: amount}("");
+        require(success, "Transfer failed");
     }
 
     /**
@@ -36,10 +54,21 @@ contract TimelockEscrow {
      */
     function buyerWithdraw() external {
         // your code here
+        uint256 amount = deposits[msg.sender];
+        require(amount > 0, "No active escrow");
+        // forge-lint: disable-next-line(block-timestamp)
+        require(block.timestamp < depositTimes[msg.sender] + 3 days, "Escrow has expired");
+
+        delete deposits[msg.sender];
+        delete depositTimes[msg.sender];
+
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "Transfer failed");
     }
 
     // returns the escrowed amount of @param buyer
     function buyerDeposit(address buyer) external view returns (uint256) {
         // your code here
+        return deposits[buyer];
     }
 }

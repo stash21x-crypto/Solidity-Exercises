@@ -10,8 +10,13 @@ contract Deployer {
 
     function deployContract() public returns (address) {
         // your code here
+        return address(new DeployMe());
     }
 }
 
-contract DeployMe {}
+contract DeployMe {
+    function getValue() public pure returns (string memory) {
+        return "Hello, I am deployed!";
+    }
+}
 
