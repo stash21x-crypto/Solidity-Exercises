@@ -1,5 +1,9 @@
 # Solidity Exercises
 
+![Solidity Exercises](https://img.shields.io/badge/Focus-Solidity%20Exercises-blue)
+![Education](https://img.shields.io/badge/Learning-RareSkills%20-orange)
+![License](https://img.shields.io/badge/License-BUSL-1.1%20License-yellow)
+
 This is a set of exercises accompanies the RareSkills [learn solidity](https://rareskills.io/learn-solidity) tutorial so you can learn Solidity by doing bite-sized exercises. It's intended for experienced programmers who want to get the the point quickly and immediately practice what they learn.
 
 ## Installation
